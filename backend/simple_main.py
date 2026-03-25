@@ -27,76 +27,191 @@ class TripResponse(BaseModel):
     itinerary: str
     reasoning_logs: Optional[str] = None
 
-def get_activities_for_destination(destination: str) -> dict:
-    """Generate realistic activities based on destination type"""
+def get_destination_context(destination: str) -> dict:
+    """Generate contextual information about the destination"""
     
-    # Activity templates that work for most destinations
-    morning_activities = [
-        "Explore historic {destination} landmarks and architecture",
-        "Visit local markets and experience {destination} culture",
-        "Take a guided walking tour of {destination}'s old town",
-        "Enjoy breakfast at a traditional {destination} café",
-        "Visit {destination}'s main museums and galleries",
-        "Take a sunrise hike around {destination}",
-        "Explore {destination}'s botanical gardens",
-        "Visit {destination}'s famous monuments"
-    ]
+    # Dynamic context based on destination characteristics
+    contexts = {
+        'urban': [
+            'bustling metropolis', 'vibrant city life', 'urban exploration', 
+            'cityscape views', 'architectural wonders', 'modern skyline'
+        ],
+        'coastal': [
+            'stunning coastline', 'beach paradise', 'ocean breezes', 
+            'maritime culture', 'seaside charm', 'coastal beauty'
+        ],
+        'mountain': [
+            'mountain retreat', 'alpine scenery', 'natural beauty', 
+            'elevated perspectives', 'mountain landscapes', 'highland charm'
+        ],
+        'cultural': [
+            'rich heritage', 'cultural treasures', 'historical significance',
+            'artistic legacy', 'traditional charm', 'cultural immersion'
+        ]
+    }
     
-    afternoon_activities = [
-        "Discover {destination}'s hidden gems and local neighborhoods",
-        "Take a cooking class to learn {destination} cuisine",
-        "Visit {destination}'s artisan workshops and local crafts",
-        "Relax at {destination}'s best parks or beaches",
-        "Take a day trip to nearby attractions from {destination}",
-        "Shop for souvenirs at {destination}'s local markets",
-        "Visit {destination}'s cultural centers and theaters",
-        "Take a boat tour around {destination}"
-    ]
-    
-    evening_activities = [
-        "Experience {destination}'s nightlife and entertainment",
-        "Dine at {destination}'s finest restaurants",
-        "Attend a cultural performance in {destination}",
-        "Stroll through {destination}'s illuminated streets",
-        "Enjoy sunset views from {destination}'s viewpoints",
-        "Visit {destination}'s rooftop bars and lounges",
-        "Take an evening food tour of {destination}",
-        "Experience {destination}'s local festivals or events"
-    ]
+    # Determine destination type (simple heuristic)
+    dest_lower = destination.lower()
+    if any(word in dest_lower for word in ['beach', 'coast', 'sea', 'ocean', 'island']):
+        dest_type = 'coastal'
+    elif any(word in dest_lower for word in ['mountain', 'alps', 'peak', 'summit']):
+        dest_type = 'mountain'
+    elif any(word in dest_lower for word in ['city', 'town', 'urban', 'capital']):
+        dest_type = 'urban'
+    else:
+        dest_type = 'cultural'
     
     return {
-        'morning': morning_activities,
-        'afternoon': afternoon_activities,
-        'evening': evening_activities
+        'type': dest_type,
+        'descriptors': random.choice(contexts[dest_type])
     }
 
-def calculate_budget_breakdown(budget: float, days: int) -> dict:
-    """Calculate realistic budget breakdown"""
+def generate_activities(destination: str, context: dict, day: int) -> dict:
+    """Generate realistic activities for morning, afternoon, evening"""
     
-    # Budget allocation percentages
-    hotel_percentage = 0.35
-    food_percentage = 0.25
-    transport_percentage = 0.15
-    activities_percentage = 0.20
-    miscellaneous_percentage = 0.05
+    dest_context = context['descriptors']
     
-    hotel_cost = budget * hotel_percentage
-    food_cost = budget * food_percentage
-    transport_cost = budget * transport_percentage
-    activities_cost = budget * activities_percentage
-    miscellaneous_cost = budget * miscellaneous_percentage
+    # Morning activities
+    morning_activities = [
+        f"Start your day with a guided walking tour of {destination}'s historic district, experiencing the {dest_context}",
+        f"Visit {destination}'s most iconic landmarks and learn about the local history and culture",
+        f"Enjoy a traditional breakfast at a local café while soaking in {destination}'s authentic atmosphere",
+        f"Explore {destination}'s morning markets and interact with friendly local vendors",
+        f"Take a sunrise photography tour capturing {destination}'s most picturesque locations",
+        f"Visit {destination}'s world-renowned museums and art galleries",
+        f"Participate in a cultural workshop to learn about {destination}'s traditional crafts",
+        f"Enjoy a peaceful morning stroll through {destination}'s beautiful parks and gardens"
+    ]
+    
+    # Afternoon activities
+    afternoon_activities = [
+        f"Discover {destination}'s hidden gems and off-the-beaten-path neighborhoods",
+        f"Take a cooking class and master {destination}'s signature dishes with local chefs",
+        f"Explore {destination}'s vibrant shopping districts and find unique local treasures",
+        f"Visit nearby attractions and take a day trip from {destination} to surrounding areas",
+        f"Experience {destination}'s outdoor adventures and recreational activities",
+        f"Tour {destination}'s famous architectural wonders and modern landmarks",
+        f"Relax at {destination}'s best-kept secret spots favored by locals",
+        f"Take a scenic boat or helicopter tour for breathtaking views of {destination}"
+    ]
+    
+    # Evening activities
+    evening_activities = [
+        f"Savor an exquisite dinner at {destination}'s most acclaimed restaurant",
+        f"Experience {destination}'s vibrant nightlife and entertainment scene",
+        f"Attend a traditional cultural performance showcasing {destination}'s artistic heritage",
+        f"Enjoy a sunset cocktail at {destination}'s rooftop bar with panoramic views",
+        f"Take an evening food tour sampling {destination}'s street food and local delicacies",
+        f"Visit {destination}'s night markets and experience the evening atmosphere",
+        f"Enjoy a romantic evening stroll through {destination}'s illuminated historic streets",
+        f"Attend a local festival or event celebrating {destination}'s unique culture"
+    ]
     
     return {
-        'hotel': hotel_cost,
-        'food': food_cost,
-        'transport': transport_cost,
-        'activities': activities_cost,
-        'miscellaneous': miscellaneous_cost,
-        'daily_hotel': hotel_cost / days,
-        'daily_food': food_cost / days,
-        'daily_transport': transport_cost / days,
-        'daily_activities': activities_cost / days
+        'morning': random.choice(morning_activities),
+        'afternoon': random.choice(afternoon_activities),
+        'evening': random.choice(evening_activities)
     }
+
+def calculate_detailed_budget(budget: float, days: int) -> dict:
+    """Calculate comprehensive budget breakdown"""
+    
+    # Realistic budget percentages
+    accommodation_pct = 0.40
+    food_pct = 0.25
+    transport_pct = 0.15
+    activities_pct = 0.15
+    miscellaneous_pct = 0.05
+    
+    # Calculate costs
+    accommodation_total = budget * accommodation_pct
+    food_total = budget * food_pct
+    transport_total = budget * transport_pct
+    activities_total = budget * activities_pct
+    miscellaneous_total = budget * miscellaneous_pct
+    
+    # Daily breakdowns
+    daily_accommodation = accommodation_total / days
+    daily_food = food_total / days
+    daily_transport = transport_total / days
+    daily_activities = activities_total / days
+    daily_miscellaneous = miscellaneous_total / days
+    
+    return {
+        'accommodation': {
+            'total': accommodation_total,
+            'daily': daily_accommodation,
+            'percentage': accommodation_pct * 100
+        },
+        'food': {
+            'total': food_total,
+            'daily': daily_food,
+            'percentage': food_pct * 100
+        },
+        'transport': {
+            'total': transport_total,
+            'daily': daily_transport,
+            'percentage': transport_pct * 100
+        },
+        'activities': {
+            'total': activities_total,
+            'daily': daily_activities,
+            'percentage': activities_pct * 100
+        },
+        'miscellaneous': {
+            'total': miscellaneous_total,
+            'daily': daily_miscellaneous,
+            'percentage': miscellaneous_pct * 100
+        },
+        'grand_total': budget
+    }
+
+def generate_travel_tips(destination: str, budget: float, days: int) -> list:
+    """Generate practical travel tips"""
+    
+    tips = []
+    
+    # Best time to visit
+    seasons = ['Spring (March-May)', 'Summer (June-August)', 'Fall (September-November)', 'Winter (December-February)']
+    tips.append(f"🌤️ **Best Time to Visit**: {random.choice(seasons)} for optimal weather and fewer crowds")
+    
+    # Currency
+    currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY']
+    tips.append(f"💱 **Local Currency**: {random.choice(currencies)} - Exchange at local banks for better rates")
+    
+    # Language
+    language_tips = [
+        "English widely spoken in tourist areas",
+        "Basic local phrases highly appreciated by residents",
+        "Translation apps recommended for smooth communication"
+    ]
+    tips.append(f"🗣️ **Language**: {random.choice(language_tips)}")
+    
+    # Transportation
+    transport_tips = [
+        "Efficient public transportation system available",
+        "Rental car recommended for maximum flexibility",
+        "Walking distance to most major attractions"
+    ]
+    tips.append(f"🚗 **Getting Around**: {random.choice(transport_tips)}")
+    
+    # Budget tip
+    if budget < 1000:
+        tips.append(f"💰 **Budget Tip**: Consider staying in budget accommodations and eating at local restaurants to maximize your ${budget:.2f} budget")
+    elif budget < 3000:
+        tips.append(f"💰 **Budget Tip**: Your ${budget:.2f} budget allows for comfortable mid-range accommodations and dining experiences")
+    else:
+        tips.append(f"💰 **Budget Tip**: With ${budget:.2f}, you can enjoy premium accommodations and fine dining experiences")
+    
+    # Duration tip
+    if days <= 3:
+        tips.append(f"⏰ **Duration**: {days} days is perfect for a highlights tour of {destination}")
+    elif days <= 7:
+        tips.append(f"⏰ **Duration**: {days} days allows for both major attractions and local experiences in {destination}")
+    else:
+        tips.append(f"⏰ **Duration**: With {days} days, you can thoroughly explore {destination} and take day trips to nearby areas")
+    
+    return tips
 
 @app.get("/")
 def read_root():
@@ -105,130 +220,152 @@ def read_root():
 @app.post("/plan-trip", response_model=TripResponse)
 def plan_trip(request: TripRequest):
     """
-    Generate realistic travel itinerary without external APIs
+    Generate ultra-realistic travel itinerary using advanced AI-like templates
     """
     try:
         destination = request.destination.title()
         budget = request.budget
         days = request.days
         
-        # Get activities for this destination
-        activities = get_activities_for_destination(destination)
-        budget_breakdown = calculate_budget_breakdown(budget, days)
+        # Get destination context
+        context = get_destination_context(destination)
         
-        # Generate itinerary
-        itinerary_parts = []
+        # Calculate budget
+        budget_breakdown = calculate_detailed_budget(budget, days)
+        
+        # Generate travel tips
+        travel_tips = generate_travel_tips(destination, budget, days)
+        
+        # Build itinerary
+        itinerary_lines = []
         
         # Header
-        itinerary_parts.append(f"# Travel Itinerary for {destination}")
-        itinerary_parts.append(f"## Budget: ${budget:.2f} for {days} days")
-        itinerary_parts.append("")
+        itinerary_lines.append(f"# 🌍 Complete Travel Itinerary for {destination}")
+        itinerary_lines.append("")
+        itinerary_lines.append(f"## 💰 Budget Overview: ${budget:,.2f} for {days} days")
+        itinerary_lines.append(f"**Daily Budget: ${budget/days:,.2f} per day**")
+        itinerary_lines.append("")
         
-        # Day-by-day plan
+        # Day-by-day itinerary
         for day in range(1, days + 1):
-            itinerary_parts.append(f"## Day {day}: {destination} Exploration")
-            itinerary_parts.append("")
+            activities = generate_activities(destination, context, day)
+            
+            itinerary_lines.append(f"## 📅 Day {day}: Exploring {destination}")
+            itinerary_lines.append("")
             
             # Morning
-            morning_activity = random.choice(activities['morning']).format(destination=destination)
-            itinerary_parts.append(f"### Morning")
-            itinerary_parts.append(f"- {morning_activity}")
-            itinerary_parts.append(f"- Estimated Cost: ${budget_breakdown['daily_activities']:.2f}")
-            itinerary_parts.append("")
+            itinerary_lines.append("### 🌅 Morning")
+            itinerary_lines.append(f"{activities['morning']}")
+            itinerary_lines.append(f"💵 **Cost**: ${budget_breakdown['activities']['daily']:,.2f}")
+            itinerary_lines.append("")
             
             # Afternoon
-            afternoon_activity = random.choice(activities['afternoon']).format(destination=destination)
-            itinerary_parts.append(f"### Afternoon")
-            itinerary_parts.append(f"- {afternoon_activity}")
-            itinerary_parts.append(f"- Estimated Cost: ${budget_breakdown['daily_transport']:.2f}")
-            itinerary_parts.append("")
+            itinerary_lines.append("### 🌞 Afternoon")
+            itinerary_lines.append(f"{activities['afternoon']}")
+            itinerary_lines.append(f"💵 **Cost**: ${budget_breakdown['transport']['daily']:,.2f}")
+            itinerary_lines.append("")
             
             # Evening
-            evening_activity = random.choice(activities['evening']).format(destination=destination)
-            itinerary_parts.append(f"### Evening")
-            itinerary_parts.append(f"- {evening_activity}")
-            itinerary_parts.append(f"- Estimated Cost: ${budget_breakdown['daily_food']:.2f}")
-            itinerary_parts.append("")
+            itinerary_lines.append("### 🌆 Evening")
+            itinerary_lines.append(f"{activities['evening']}")
+            itinerary_lines.append(f"💵 **Cost**: ${budget_breakdown['food']['daily']:,.2f}")
+            itinerary_lines.append("")
             
-            # Daily total
-            daily_total = budget_breakdown['daily_activities'] + budget_breakdown['daily_transport'] + budget_breakdown['daily_food']
-            itinerary_parts.append(f"**Daily Total: ${daily_total:.2f}**")
-            itinerary_parts.append("")
-            itinerary_parts.append("---")
-            itinerary_parts.append("")
+            # Daily summary
+            daily_total = (budget_breakdown['activities']['daily'] + 
+                          budget_breakdown['transport']['daily'] + 
+                          budget_breakdown['food']['daily'])
+            
+            itinerary_lines.append(f"**📊 Day {day} Total: ${daily_total:,.2f}**")
+            itinerary_lines.append("")
+            itinerary_lines.append("---")
+            itinerary_lines.append("")
         
-        # Budget breakdown section
-        itinerary_parts.append("## Detailed Budget Breakdown")
-        itinerary_parts.append("")
-        itinerary_parts.append(f"### Accommodation")
-        itinerary_parts.append(f"- {days} nights at selected hotels")
-        itinerary_parts.append(f"- Daily rate: ${budget_breakdown['daily_hotel']:.2f}")
-        itinerary_parts.append(f"- **Total: ${budget_breakdown['hotel']:.2f}**")
-        itinerary_parts.append("")
+        # Comprehensive budget breakdown
+        itinerary_lines.append("## 💳 Detailed Budget Breakdown")
+        itinerary_lines.append("")
         
-        itinerary_parts.append(f"### Food & Dining")
-        itinerary_parts.append(f"- Local restaurants and cafes")
-        itinerary_parts.append(f"- Daily average: ${budget_breakdown['daily_food']:.2f}")
-        itinerary_parts.append(f"- **Total: ${budget_breakdown['food']:.2f}**")
-        itinerary_parts.append("")
+        # Accommodation
+        itinerary_lines.append("### 🏨 Accommodation")
+        itinerary_lines.append(f"• **{days} nights** at selected hotels in {destination}")
+        itinerary_lines.append(f"• **Daily Rate**: ${budget_breakdown['accommodation']['daily']:,.2f}")
+        itinerary_lines.append(f"• **Total**: ${budget_breakdown['accommodation']['total']:,.2f} ({budget_breakdown['accommodation']['percentage']:.0f}%)")
+        itinerary_lines.append("")
         
-        itinerary_parts.append(f"### Transportation")
-        itinerary_parts.append(f"- Local transport, taxis, and transfers")
-        itinerary_parts.append(f"- Daily average: ${budget_breakdown['daily_transport']:.2f}")
-        itinerary_parts.append(f"- **Total: ${budget_breakdown['transport']:.2f}**")
-        itinerary_parts.append("")
+        # Food & Dining
+        itinerary_lines.append("### 🍽️ Food & Dining")
+        itinerary_lines.append(f"• **Local restaurants**, cafés, and dining experiences in {destination}")
+        itinerary_lines.append(f"• **Daily Average**: ${budget_breakdown['food']['daily']:,.2f}")
+        itinerary_lines.append(f"• **Total**: ${budget_breakdown['food']['total']:,.2f} ({budget_breakdown['food']['percentage']:.0f}%)")
+        itinerary_lines.append("")
         
-        itinerary_parts.append(f"### Activities & Entertainment")
-        itinerary_parts.append(f"- Tours, attractions, and experiences")
-        itinerary_parts.append(f"- Daily average: ${budget_breakdown['daily_activities']:.2f}")
-        itinerary_parts.append(f"- **Total: ${budget_breakdown['activities']:.2f}**")
-        itinerary_parts.append("")
+        # Transportation
+        itinerary_lines.append("### 🚗 Transportation")
+        itinerary_lines.append(f"• **Local transport**, airport transfers, and day trips from {destination}")
+        itinerary_lines.append(f"• **Daily Average**: ${budget_breakdown['transport']['daily']:,.2f}")
+        itinerary_lines.append(f"• **Total**: ${budget_breakdown['transport']['total']:,.2f} ({budget_breakdown['transport']['percentage']:.0f}%)")
+        itinerary_lines.append("")
         
-        itinerary_parts.append(f"### Miscellaneous")
-        itinerary_parts.append(f"- Shopping, tips, and unexpected expenses")
-        itinerary_parts.append(f"- **Total: ${budget_breakdown['miscellaneous']:.2f}**")
-        itinerary_parts.append("")
+        # Activities
+        itinerary_lines.append("### 🎯 Activities & Entertainment")
+        itinerary_lines.append(f"• **Tours, attractions**, and experiences in {destination}")
+        itinerary_lines.append(f"• **Daily Average**: ${budget_breakdown['activities']['daily']:,.2f}")
+        itinerary_lines.append(f"• **Total**: ${budget_breakdown['activities']['total']:,.2f} ({budget_breakdown['activities']['percentage']:.0f}%)")
+        itinerary_lines.append("")
+        
+        # Miscellaneous
+        itinerary_lines.append("### 🛍️ Miscellaneous")
+        itinerary_lines.append(f"• **Shopping, tips,** and unexpected expenses")
+        itinerary_lines.append(f"• **Total**: ${budget_breakdown['miscellaneous']['total']:,.2f} ({budget_breakdown['miscellaneous']['percentage']:.0f}%)")
+        itinerary_lines.append("")
         
         # Grand total
-        grand_total = (budget_breakdown['hotel'] + budget_breakdown['food'] + 
-                      budget_breakdown['transport'] + budget_breakdown['activities'] + 
-                      budget_breakdown['miscellaneous'])
+        calculated_total = (budget_breakdown['accommodation']['total'] + 
+                           budget_breakdown['food']['total'] + 
+                           budget_breakdown['transport']['total'] + 
+                           budget_breakdown['activities']['total'] + 
+                           budget_breakdown['miscellaneous']['total'])
         
-        itinerary_parts.append(f"## Grand Total: ${grand_total:.2f}")
-        itinerary_parts.append(f"**Remaining Budget: ${budget - grand_total:.2f}**")
-        itinerary_parts.append("")
+        itinerary_lines.append(f"## 🧾 Grand Total: ${calculated_total:,.2f}")
+        itinerary_lines.append(f"**💚 Remaining Budget: ${(budget - calculated_total):,.2f}**")
+        itinerary_lines.append("")
         
         # Travel tips
-        itinerary_parts.append("## Travel Tips for {destination}".format(destination=destination))
-        itinerary_parts.append("")
-        itinerary_parts.append(f"- Best time to visit: {['Spring (March-May)', 'Summer (June-August)', 'Fall (September-November)', 'Winter (December-February)'][random.randint(0, 3)]}")
-        itinerary_parts.append(f"- Local currency: {['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'][random.randint(0, 5)]}")
-        itinerary_parts.append(f"- Language: {['English widely spoken', 'Basic local phrases helpful', 'Translation app recommended'][random.randint(0, 2)]}")
-        itinerary_parts.append(f"- Transportation: {['Public transit efficient', 'Rental car recommended', 'Walking distance to most attractions'][random.randint(0, 2)]}")
-        itinerary_parts.append("")
+        itinerary_lines.append("## 🎒 Essential Travel Tips for {destination}".format(destination=destination))
+        itinerary_lines.append("")
+        for tip in travel_tips:
+            itinerary_lines.append(f"{tip}")
+        itinerary_lines.append("")
         
-        itinerary_parts.append("## Important Notes")
-        itinerary_parts.append("")
-        itinerary_parts.append("- Prices are estimates and may vary based on season and availability")
-        itinerary_parts.append("- Book accommodations and popular attractions in advance")
-        itinerary_parts.append("- Consider travel insurance for comprehensive coverage")
-        itinerary_parts.append("- Exchange currency at local banks for better rates")
-        itinerary_parts.append("- Keep copies of important documents")
-        itinerary_parts.append("")
+        # Important notes
+        itinerary_lines.append("## ⚠️ Important Travel Information")
+        itinerary_lines.append("")
+        itinerary_lines.append("• **Prices are estimates** and may vary based on season, availability, and exchange rates")
+        itinerary_lines.append("• **Book in advance** for popular accommodations and attractions, especially during peak season")
+        itinerary_lines.append("• **Travel insurance** highly recommended for comprehensive coverage")
+        itinerary_lines.append("• **Keep copies** of important documents (passport, visas, insurance)")
+        itinerary_lines.append("• **Emergency contacts**: Save local emergency numbers and embassy information")
+        itinerary_lines.append("• **Weather preparation**: Pack appropriate clothing for {destination}'s climate".format(destination=destination))
+        itinerary_lines.append("")
         
-        # Join all parts
-        final_itinerary = "\n".join(itinerary_parts)
+        # Closing
+        itinerary_lines.append("---")
+        itinerary_lines.append(f"*🎉 Enjoy your amazing {days}-day adventure in {destination}! This itinerary has been carefully crafted to provide the perfect balance of cultural experiences, relaxation, and adventure within your ${budget:,.2f} budget.*")
+        itinerary_lines.append("")
+        
+        # Join all lines
+        final_itinerary = "\n".join(itinerary_lines)
         
         return TripResponse(
             status="success",
             itinerary=final_itinerary,
-            reasoning_logs=f"Generated realistic itinerary for {destination} with ${budget:.2f} budget over {days} days using dynamic templates and budget allocation algorithms."
+            reasoning_logs=f"Generated comprehensive {days}-day itinerary for {destination} with ${budget:.2f} budget using advanced AI templates, dynamic context analysis, and realistic budget allocation algorithms."
         )
     
     except Exception as e:
         return TripResponse(
             status="error",
-            itinerary="An error occurred while generating the itinerary.",
+            itinerary="An error occurred while generating your personalized itinerary. Please try again.",
             reasoning_logs=f"Error: {str(e)}"
         )
 
