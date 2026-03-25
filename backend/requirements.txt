@@ -1,0 +1,11 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+pydantic==2.6.1
+crewai==0.22.5
+langchain-openai==0.0.5
+langchain==0.1.0
+python-dotenv==1.0.0
+pandas==2.2.1
+tavily-python==0.3.3
+numexpr==2.9.0
+requests==2.31.0
