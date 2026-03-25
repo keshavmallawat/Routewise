@@ -40,7 +40,8 @@ function App() {
       if (response.data.status === 'success') {
         setItinerary(response.data.itinerary);
       } else {
-        setError(response.data.reasoning_logs || 'Failed to generate itinerary');
+        // Show the actual itinerary/error message, not the reasoning logs
+        setError(response.data.itinerary || response.data.reasoning_logs || 'Failed to generate itinerary');
       }
     } catch (err) {
       console.error(err);
@@ -127,9 +128,44 @@ function App() {
               </form>
 
               {error && (
-                <div className="mt-6 p-4 bg-destructive/10 border border-destructive text-destructive-foreground flex items-center gap-3">
-                  <AlertCircle className="size={16} flex-shrink-0" />
-                  <span className="text-sm">{error}</span>
+                <div className="mt-6 p-4 bg-destructive/10 border border-destructive text-destructive-foreground">
+                  <div className="flex items-center gap-3 mb-2">
+                    <AlertCircle className="size={16} flex-shrink-0" />
+                    <span className="text-sm font-medium">Error</span>
+                  </div>
+                  <div className="prose prose-invert max-w-none">
+                    <ReactMarkdown 
+                      className="text-sm leading-relaxed"
+                      components={{
+                        h1: ({children, ...props}) => (
+                          <h1 className="text-lg font-bold mb-2" {...props}>{children}</h1>
+                        ),
+                        h2: ({children, ...props}) => (
+                          <h2 className="text-base font-semibold mb-2 mt-3" {...props}>{children}</h2>
+                        ),
+                        h3: ({children, ...props}) => (
+                          <h3 className="text-sm font-medium mb-1 mt-2" {...props}>{children}</h3>
+                        ),
+                        ul: ({children, ...props}) => (
+                          <ul className="list-disc list-inside space-y-1 ml-4 mb-3" {...props}>{children}</ul>
+                        ),
+                        li: ({children, ...props}) => (
+                          <li className="text-sm leading-relaxed" {...props}>{children}</li>
+                        ),
+                        p: ({children, ...props}) => (
+                          <p className="text-sm leading-relaxed mb-2" {...props}>{children}</p>
+                        ),
+                        strong: ({children, ...props}) => (
+                          <strong className="font-medium" {...props}>{children}</strong>
+                        ),
+                        a: ({children, ...props}) => (
+                          <a className="underline hover:no-underline" {...props}>{children}</a>
+                        )
+                      }}
+                    >
+                      {error}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               )}
             </CardContent>
