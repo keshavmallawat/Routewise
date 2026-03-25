@@ -43,3 +43,38 @@
     -moz-appearance: textfield;
   }
 }
+
+@layer utilities {
+  .prose {
+    color: hsl(var(--muted-foreground));
+    max-width: none;
+  }
+  
+  .prose h1 {
+    @apply text-2xl font-bold text-foreground mb-4;
+  }
+  
+  .prose h2 {
+    @apply text-xl font-semibold text-foreground mb-3 mt-6;
+  }
+  
+  .prose h3 {
+    @apply text-lg font-medium text-foreground mb-2 mt-4;
+  }
+  
+  .prose ul {
+    @apply list-disc list-inside space-y-1 ml-4 mb-4;
+  }
+  
+  .prose li {
+    @apply text-sm text-muted-foreground leading-relaxed;
+  }
+  
+  .prose p {
+    @apply text-sm text-muted-foreground leading-relaxed mb-4;
+  }
+  
+  .prose strong {
+    @apply font-semibold text-foreground;
+  }
+}

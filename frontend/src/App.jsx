@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import ReactMarkdown from 'react-markdown';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8001";
 
@@ -143,39 +144,38 @@ function App() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  {itinerary.split('\n').map((line, i) => {
-                    if (line.startsWith('# ')) return null;
-                    if (line.startsWith('Day ') || line.match(/^## /)) {
-                      return (
-                        <div key={i} className="space-y-3">
-                          <Badge variant="outline" className="text-xs">
-                            {line.replace('## ', '')}
-                          </Badge>
-                          <Separator className="my-4" />
-                        </div>
-                      );
-                    }
-                    if (line.trim().startsWith('-') || line.trim().startsWith('*')) {
-                      return (
-                        <li key={i} className="ml-4 text-sm text-muted-foreground leading-relaxed list-disc">
-                          {line.trim().substring(1).trim()}
-                        </li>
-                      );
-                    }
-                    if (line.toLowerCase().includes('estimated cost')) {
-                      return (
-                        <p key={i} className="text-sm text-emerald-400 font-medium leading-relaxed">
-                          {line}
-                        </p>
-                      );
-                    }
-                    return (
-                      <p key={i} className="text-sm text-muted-foreground leading-relaxed">
-                        {line}
-                      </p>
-                    );
-                  })}
+                <div className="prose prose-invert max-w-none">
+                  <ReactMarkdown 
+                    className="text-sm text-muted-foreground leading-relaxed"
+                    components={{
+                      h1: ({children, ...props}) => (
+                        <h1 className="text-2xl font-bold text-foreground mb-4" {...props}>{children}</h1>
+                      ),
+                      h2: ({children, ...props}) => (
+                        <h2 className="text-xl font-semibold text-foreground mb-3 mt-6" {...props}>{children}</h2>
+                      ),
+                      h3: ({children, ...props}) => (
+                        <h3 className="text-lg font-medium text-foreground mb-2 mt-4" {...props}>{children}</h3>
+                      ),
+                      ul: ({children, ...props}) => (
+                        <ul className="list-disc list-inside space-y-1 ml-4 mb-4" {...props}>{children}</ul>
+                      ),
+                      li: ({children, ...props}) => (
+                        <li className="text-sm text-muted-foreground leading-relaxed" {...props}>{children}</li>
+                      ),
+                      p: ({children, ...props}) => (
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4" {...props}>{children}</p>
+                      ),
+                      strong: ({children, ...props}) => (
+                        <strong className="font-semibold text-foreground" {...props}>{children}</strong>
+                      ),
+                      hr: ({...props}) => (
+                        <Separator className="my-6" {...props} />
+                      )
+                    }}
+                  >
+                    {itinerary}
+                  </ReactMarkdown>
                 </div>
               </CardContent>
             </Card>
