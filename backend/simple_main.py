@@ -107,8 +107,8 @@ Get your free API key at: https://aistudio.google.com/app/apikey
 Without the API key, the system cannot generate detailed itineraries."""
 
     try:
-        # Initialize Gemini model (using free tier: gemini-1.5-flash)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Initialize Gemini model (using latest: gemini-2.0-flash)
+        model = genai.GenerativeModel('gemini-2.0-flash')
         
         # Create detailed prompt
         prompt = create_gemini_prompt(destination, budget, days)
